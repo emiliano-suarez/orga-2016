@@ -2,8 +2,15 @@
 
 ### Compilation
 
+Download this repository:
 ```sh
-$ gcc -Wall -O0 tp0.c -o tp0
+$ git clone git@github.com:emiliano-suarez/orga-2016.git
+```
+
+Compile
+```sh
+$ cd tp0/src
+$ make
 ```
 
 ### Execution
