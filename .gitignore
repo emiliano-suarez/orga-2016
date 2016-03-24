@@ -27,6 +27,9 @@
 *.i*86
 *.x86_64
 *.hex
+tp0/src/tp0
+tp1/src/tp1
+tp2/src/tp2
 
 # Debug files
 *.dSYM/
