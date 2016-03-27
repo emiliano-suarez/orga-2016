@@ -23,18 +23,19 @@ int print_matrix(FILE* fp, matrix_t* m);
 // Multiplica las matrices en m1 y m2
 matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2);
 
-void read_arguments(char* line, int line_size,
-                    int* matrix_dimension,
-                    double* matrix_elements);
+
+int read_arguments(char* line, int line_size, double* matrix_elements);
 
 int main (int argc, char *argv[])
 {
     char* line = malloc(sizeof(char));
     char c;
+    int i = 0;
     int chars_per_line = 0;
     int matrix_dimension = 0;
+    int amount_elements = 0;
     double matrix_elements = 0;
-    double* first_element = 0;
+    double* element_pointer = 0;
 
     // Leo desde stdin
     while( (c = getc(stdin)) != EOF)
@@ -51,18 +52,23 @@ int main (int argc, char *argv[])
 
         // Si finalizó la línea, multiplico las matrices
         if ('\n' == c) {
-            printf("matrix_dimension_1: %d\n", matrix_dimension);
-            read_arguments(line, chars_per_line,
-                           &matrix_dimension,
-                           &matrix_elements);
+            matrix_dimension = read_arguments(line, chars_per_line,
+                                              &matrix_elements);
 
-            printf("matrix_dimension_2: %d\n", matrix_dimension);
+            // Calculo la cantidad de elementos de ambas matrices.
+            amount_elements = matrix_dimension * matrix_dimension * 2;
 
-            first_element = &matrix_elements;
+            printf("matrix_dimension: %d\n", matrix_dimension);
+            printf("amount_elements: %d\n", amount_elements);
 
-            printf("first_element: %f\n", *first_element);
-            first_element++;
-            printf("second: %f\n", *first_element);
+            element_pointer = &matrix_elements;
+
+            i = 0;
+            do {
+                printf("element[%d]: %f\n", i, *element_pointer);
+                i++;
+                element_pointer++;
+            } while(i < amount_elements);
 
             chars_per_line = 0;
         }
@@ -109,25 +115,26 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2)
     return result;
 }
 
-void read_arguments(char* line, int line_size,
-                    int* matrix_dimension,
-                    double* matrix_elements) {
+int read_arguments(char* line, int line_size, double* matrix_elements) {
 
     char *first_token;
     char *search = " ";
     double element = 0;
+    int dimension = 0;
 
     /*
      Leo la dimensión de la matriz, que está en la primer posición
      de la línea.
     */
     first_token = strtok(line, search);
-    *matrix_dimension = atoi(first_token);
+    dimension = atoi(first_token);
 
     while ( (first_token = strtok( NULL, search)) != NULL) {
         element = atof(first_token);
         *matrix_elements = element;
-        printf( "x: %f\n", *matrix_elements);
+        // printf( "x: %f\n", *matrix_elements);
         matrix_elements++;
     }
+
+    return dimension;
 }
