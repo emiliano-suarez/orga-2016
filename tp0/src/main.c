@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct matrix {
     size_t rows;
@@ -22,13 +23,18 @@ int print_matrix(FILE* fp, matrix_t* m);
 // Multiplica las matrices en m1 y m2
 matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2);
 
-void read_arguments(char* line, int chars_per_line);
+void read_arguments(char* line, int line_size,
+                    int* matrix_dimension,
+                    double* matrix_elements);
 
 int main (int argc, char *argv[])
 {
     char* line = malloc(sizeof(char));
     char c;
     int chars_per_line = 0;
+    int matrix_dimension = 0;
+    double matrix_elements = 0;
+    double* first_element = 0;
 
     // Leo desde stdin
     while( (c = getc(stdin)) != EOF)
@@ -45,19 +51,25 @@ int main (int argc, char *argv[])
 
         // Si finalizó la línea, multiplico las matrices
         if ('\n' == c) {
-            // printf("chars_per_line: %d\n", chars_per_line);
-            read_arguments(line, chars_per_line);
+            printf("matrix_dimension_1: %d\n", matrix_dimension);
+            read_arguments(line, chars_per_line,
+                           &matrix_dimension,
+                           &matrix_elements);
+
+            printf("matrix_dimension_2: %d\n", matrix_dimension);
+
+            first_element = &matrix_elements;
+
+            printf("first_element: %f\n", *first_element);
+            first_element++;
+            printf("second: %f\n", *first_element);
+
             chars_per_line = 0;
         }
-
-        // fputc(c, stdout);
-        
+       
     }
 
     free(line);
-    // fputc('\n', stdout);
-
-    printf("TP 0\n");
     return 0;
 }
 
@@ -97,9 +109,25 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2)
     return result;
 }
 
-void read_arguments(char* line, int line_size) {
-    int i;
-    for (i = 0; i < line_size; i++) {
-        printf("c_%d: %c\n", i, line[i]);
+void read_arguments(char* line, int line_size,
+                    int* matrix_dimension,
+                    double* matrix_elements) {
+
+    char *first_token;
+    char *search = " ";
+    double element = 0;
+
+    /*
+     Leo la dimensión de la matriz, que está en la primer posición
+     de la línea.
+    */
+    first_token = strtok(line, search);
+    *matrix_dimension = atoi(first_token);
+
+    while ( (first_token = strtok( NULL, search)) != NULL) {
+        element = atof(first_token);
+        *matrix_elements = element;
+        printf( "x: %f\n", *matrix_elements);
+        matrix_elements++;
     }
 }
