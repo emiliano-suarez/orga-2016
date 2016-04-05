@@ -51,7 +51,7 @@ int main (int argc, char *argv[])
     int elements_per_matrix = 0;
     int print_result = 0;
 
- //   if (readFromStdInput(argc)) {
+    if (readFromStdInput(argc)) {
         // Leo desde stdin
         while( (c = getc(stdin)) != EOF)
         {
@@ -95,7 +95,6 @@ int main (int argc, char *argv[])
                 chars_per_line = 0;
             }
         }
-/*
     } else if (argc >= 2) { // Parseo los argumentos
         param = *(argv + 1);
         if ((strcmp(param, "-h") == 0) || (strcmp(param, "--help") == 0) ) {
@@ -105,7 +104,7 @@ int main (int argc, char *argv[])
             printVersion();
         }
     }
-*/
+
     free(line);
     return print_result;
 }
