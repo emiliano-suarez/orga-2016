@@ -126,6 +126,7 @@ int print_matrix(FILE* fp, matrix_t* m)
 matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2)
 {
     matrix_t* result = create_matrix(m1->rows, m1->cols);
+    result->array = malloc(sizeof(double));
     double temp;
     int dim = m1->rows;
     int i = 0;
