@@ -71,18 +71,18 @@ int main (int argc, char *argv[])
         }
         else if (argc == 2) {
             // Tengo archivo de output unicamente.
-            if (NULL == (output = fopen(argv[1],"r"))) {
+            if (NULL == (output = fopen(argv[1], "r"))) {
                 fprintf(stderr, "Output File '%s' doesn't exist.\n", argv[1]);
                 exit(ERROR_OPEN_FILE);
             }
         }
         else {
             // Tengo archivo de input y output
-            if (NULL == (input = fopen(argv[1],"r"))) {
+            if (NULL == (input = fopen(argv[1], "r"))) {
                 fprintf(stderr, "Input File '%s' doesn't exist.\n", argv[1]);
                 exit(ERROR_OPEN_FILE);
             }
-            if (NULL == (output = fopen(argv[2],"r"))) {
+            if (NULL == (output = fopen(argv[2], "w+"))) {
                 fprintf(stderr, "Output File '%s' doesn't exist.\n", argv[2]);
                 exit(ERROR_OPEN_FILE);
             }
@@ -115,19 +115,14 @@ por el enunciado
 */
 int print_matrix(FILE* fp, matrix_t* m)
 {
-    // FIXME: imprimir por fp.
-
-    // char* text = "";
     int i = 0;
     int dim = m->rows;
 
     for (i = 0; i < dim * dim; i++) {
-        // fputs(gcvt(m->array[i], DECIMALS, text), fp);
-        // fputs(". ", fp);
-        printf("%f ", m->array[i]);
+        fprintf(fp, "%f ", m->array[i]);
     }
-    // fputs("\n", fp);
-    printf("\n");
+    
+    fprintf(fp, "\n");
 
     return 0;
 }
@@ -153,7 +148,6 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2)
 
             j -= (dim * dim);
             i -= dim;
-            // printf("temp: %f\n", temp);
             result->array[k] = temp;
         }
         x = 0;
@@ -183,7 +177,6 @@ double* read_arguments(char* line, int line_size, int *matrix_dimension) {
     while ( (first_token = strtok( NULL, search)) != NULL) {
         element = atof(first_token);
         *matrix_elements = element;
-        // printf( "x: %f\n", *matrix_elements);
         matrix_elements++;
     }
 
@@ -277,7 +270,7 @@ int matrices_multiply(FILE* input, FILE* output)
             m2->array = m2_elements;
 
             product_matrix = matrix_multiply(m1, m2);
-            print_result = print_matrix(stdout, product_matrix);
+            print_result = print_matrix(output, product_matrix);
 
             destroy_matrix(m1);
             destroy_matrix(m2);
