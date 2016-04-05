@@ -47,8 +47,15 @@ int main (int argc, char *argv[])
     double* element_pointer;
     double* m1_elements = malloc(sizeof(double));
     double* m2_elements = malloc(sizeof(double));
-    matrix_t* m1;
-    matrix_t* m2;
+    matrix_t* m1 = malloc(sizeof(matrix_t));
+    matrix_t* m2 = malloc(sizeof(matrix_t));
+
+/*
+    printf("hola\n");
+    m1 = create_matrix(2, 2);
+    printf("chau\n");
+    return 0;
+*/
 
     // Leo desde stdin
     while( (c = getc(stdin)) != EOF)
@@ -79,18 +86,19 @@ int main (int argc, char *argv[])
             m1_elements = element_pointer;
             m2_elements = &element_pointer[elements_per_matrix];
 
-            // m1 = create_matrix(matrix_dimension, matrix_dimension);
-            // m1->array = m1_elements;
-/*
+            m1 = create_matrix(matrix_dimension, matrix_dimension);
+            m1->array = m1_elements;
+
             m2 = create_matrix(matrix_dimension, matrix_dimension);
-            m1->array = m2_elements;
-*/
-            for (i = 0; i < elements_per_matrix; i++) {
-                printf("m1_elements[%d]: %f\n", i, m1_elements[i]);
-            }
+            m2->array = m2_elements;
 
             for (i = 0; i < elements_per_matrix; i++) {
-                printf("m2_elements[%d]: %f\n", i, m2_elements[i]);
+                printf("m1->array[%d]: %f\n", i, m1->array[i]);
+            }
+            printf("\n");
+
+            for (i = 0; i < elements_per_matrix; i++) {
+                printf("m2->array[%d]: %f\n", i, m2->array[i]);
             }
 
             // printf("m1.col: %d\n", m1->cols);
@@ -108,10 +116,14 @@ int main (int argc, char *argv[])
 // Constructor de matrix_t
 matrix_t* create_matrix(size_t rows, size_t cols)
 {
+/*
+    double* elements = malloc(sizeof(double*));
     matrix_t* new_matrix = malloc(sizeof(matrix_t));
     new_matrix->rows = rows;
     new_matrix->cols = cols;
-
+    new_matrix->array = elements;
+*/
+    matrix_t* new_matrix = malloc(sizeof(matrix_t));
     return new_matrix;
 }
 
