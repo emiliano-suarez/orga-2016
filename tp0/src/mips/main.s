@@ -17,16 +17,16 @@ $LC3:
 	.ascii	"--version\000"
 	.align	2
 $LC4:
-	.ascii	"r\000"
+	.ascii	"w+\000"
 	.align	2
 $LC5:
 	.ascii	"Output File '%s' doesn't exist.\n\000"
 	.align	2
 $LC6:
-	.ascii	"Input File '%s' doesn't exist.\n\000"
+	.ascii	"r\000"
 	.align	2
 $LC7:
-	.ascii	"w+\000"
+	.ascii	"Input File '%s' doesn't exist.\n\000"
 	.text
 	.align	2
 	.globl	main
@@ -127,7 +127,7 @@ $L27:
 	lw	$2,68($fp)
 	addu	$2,$2,4
 	lw	$4,0($2)
-	la	$5,$LC4
+	la	$5,$LC6
 	la	$25,fopen
 	jal	$31,$25
 	sw	$2,32($fp)
@@ -136,7 +136,7 @@ $L27:
 	lw	$2,68($fp)
 	addu	$2,$2,4
 	la	$4,__sF+176
-	la	$5,$LC6
+	la	$5,$LC7
 	lw	$6,0($2)
 	la	$25,fprintf
 	jal	$31,$25
@@ -147,7 +147,7 @@ $L30:
 	lw	$2,68($fp)
 	addu	$2,$2,8
 	lw	$4,0($2)
-	la	$5,$LC7
+	la	$5,$LC4
 	la	$25,fopen
 	jal	$31,$25
 	sw	$2,36($fp)
@@ -247,9 +247,12 @@ destroy_matrix:
 	.rdata
 	.align	2
 $LC8:
-	.ascii	"%f \000"
+	.ascii	"%d\000"
 	.align	2
 $LC9:
+	.ascii	" %f\000"
+	.align	2
+$LC10:
 	.ascii	"\n\000"
 	.text
 	.align	2
@@ -274,6 +277,11 @@ print_matrix:
 	lw	$2,52($fp)
 	lw	$2,0($2)
 	sw	$2,28($fp)
+	lw	$4,48($fp)
+	la	$5,$LC8
+	lw	$6,28($fp)
+	la	$25,fprintf
+	jal	$31,$25
 	sw	$0,24($fp)
 $L35:
 	lw	$3,28($fp)
@@ -291,7 +299,7 @@ $L38:
 	lw	$2,8($4)
 	addu	$2,$3,$2
 	lw	$4,48($fp)
-	la	$5,$LC8
+	la	$5,$LC9
 	lw	$6,0($2)
 	lw	$7,4($2)
 	la	$25,fprintf
@@ -302,7 +310,7 @@ $L38:
 	b	$L35
 $L36:
 	lw	$4,48($fp)
-	la	$5,$LC9
+	la	$5,$LC10
 	la	$25,fprintf
 	jal	$31,$25
 	move	$2,$0
@@ -459,33 +467,34 @@ $L41:
 	.size	matrix_multiply, .-matrix_multiply
 	.rdata
 	.align	2
-$LC10:
+$LC11:
 	.ascii	" \000"
 	.text
 	.align	2
 	.globl	read_arguments
 	.ent	read_arguments
 read_arguments:
-	.frame	$fp,64,$31		# vars= 24, regs= 3/0, args= 16, extra= 8
+	.frame	$fp,72,$31		# vars= 32, regs= 3/0, args= 16, extra= 8
 	.mask	0xd0000000,-8
 	.fmask	0x00000000,0
 	.set	noreorder
 	.cpload	$25
 	.set	reorder
-	subu	$sp,$sp,64
+	subu	$sp,$sp,72
 	.cprestore 16
-	sw	$31,56($sp)
-	sw	$fp,52($sp)
-	sw	$28,48($sp)
+	sw	$31,64($sp)
+	sw	$fp,60($sp)
+	sw	$28,56($sp)
 	move	$fp,$sp
-	sw	$4,64($fp)
-	sw	$5,68($fp)
-	sw	$6,72($fp)
-	la	$2,$LC10
+	sw	$4,72($fp)
+	sw	$5,76($fp)
+	sw	$6,80($fp)
+	la	$2,$LC11
 	sw	$2,28($fp)
 	sw	$0,32($fp)
 	sw	$0,36($fp)
-	lw	$4,64($fp)
+	sw	$0,48($fp)
+	lw	$4,72($fp)
 	lw	$5,28($fp)
 	la	$25,strtok
 	jal	$31,$25
@@ -494,12 +503,14 @@ read_arguments:
 	la	$25,atoi
 	jal	$31,$25
 	move	$3,$2
-	lw	$2,72($fp)
+	lw	$2,80($fp)
 	sw	$3,0($2)
-	lw	$2,72($fp)
+	lw	$2,80($fp)
 	lw	$4,0($2)
 	la	$25,get_amount_element
 	jal	$31,$25
+	sw	$2,48($fp)
+	lw	$2,48($fp)
 	sll	$2,$2,3
 	move	$4,$2
 	la	$25,malloc
@@ -536,9 +547,9 @@ $L54:
 	sw	$2,40($fp)
 	lw	$2,40($fp)
 	move	$sp,$fp
-	lw	$31,56($sp)
-	lw	$fp,52($sp)
-	addu	$sp,$sp,64
+	lw	$31,64($sp)
+	lw	$fp,60($sp)
+	addu	$sp,$sp,72
 	j	$31
 	.end	read_arguments
 	.size	read_arguments, .-read_arguments
@@ -570,9 +581,9 @@ get_amount_element:
 	.end	get_amount_element
 	.size	get_amount_element, .-get_amount_element
 	.align	2
-	.globl	get_amount_of_matrix_elements
-	.ent	get_amount_of_matrix_elements
-get_amount_of_matrix_elements:
+	.globl	get_matrix_elements
+	.ent	get_matrix_elements
+get_matrix_elements:
 	.frame	$fp,16,$31		# vars= 0, regs= 2/0, args= 0, extra= 8
 	.mask	0x50000000,-4
 	.fmask	0x00000000,0
@@ -593,8 +604,8 @@ get_amount_of_matrix_elements:
 	lw	$fp,12($sp)
 	addu	$sp,$sp,16
 	j	$31
-	.end	get_amount_of_matrix_elements
-	.size	get_amount_of_matrix_elements, .-get_amount_of_matrix_elements
+	.end	get_matrix_elements
+	.size	get_matrix_elements, .-get_matrix_elements
 	.align	2
 	.globl	readFromStdInput
 	.ent	readFromStdInput
@@ -621,37 +632,40 @@ readFromStdInput:
 	.size	readFromStdInput, .-readFromStdInput
 	.rdata
 	.align	2
-$LC11:
+$LC12:
 	.ascii	"$ tp0 -h\n\000"
 	.align	2
-$LC12:
+$LC13:
 	.ascii	"Usage:\n\000"
 	.align	2
-$LC13:
+$LC14:
 	.ascii	"  tp0 -h\n\000"
 	.align	2
-$LC14:
+$LC15:
 	.ascii	"  tp0 -V\n\000"
 	.align	2
-$LC15:
+$LC16:
 	.ascii	"  tp0 < in_file > out_file\n\000"
 	.align	2
-$LC16:
+$LC17:
 	.ascii	"Options:\n\000"
 	.align	2
-$LC17:
+$LC18:
 	.ascii	"  -V, --version    Print version and quit.\n\000"
 	.align	2
-$LC18:
-	.ascii	"  -h, --help       Print this information and quit.\n\n\000"
-	.align	2
 $LC19:
-	.ascii	"Examples:\n\000"
+	.ascii	"  -h, --help       \000"
 	.align	2
 $LC20:
-	.ascii	"  tp0 < in.txt > out.txt\n\000"
+	.ascii	"Print this information and quit.\n\n\000"
 	.align	2
 $LC21:
+	.ascii	"Examples:\n\000"
+	.align	2
+$LC22:
+	.ascii	"  tp0 < in.txt > out.txt\n\000"
+	.align	2
+$LC23:
 	.ascii	"  cat in.txt | tp0 > out.txt\n\n\000"
 	.text
 	.align	2
@@ -670,10 +684,6 @@ printHelp:
 	sw	$fp,28($sp)
 	sw	$28,24($sp)
 	move	$fp,$sp
-	la	$4,__sF+88
-	la	$5,$LC11
-	la	$25,fprintf
-	jal	$31,$25
 	la	$4,__sF+88
 	la	$5,$LC12
 	la	$25,fprintf
@@ -714,6 +724,14 @@ printHelp:
 	la	$5,$LC21
 	la	$25,fprintf
 	jal	$31,$25
+	la	$4,__sF+88
+	la	$5,$LC22
+	la	$25,fprintf
+	jal	$31,$25
+	la	$4,__sF+88
+	la	$5,$LC23
+	la	$25,fprintf
+	jal	$31,$25
 	move	$sp,$fp
 	lw	$31,32($sp)
 	lw	$fp,28($sp)
@@ -723,10 +741,10 @@ printHelp:
 	.size	printHelp, .-printHelp
 	.rdata
 	.align	2
-$LC22:
+$LC24:
 	.ascii	"Copyright (c) 2016\n\000"
 	.align	2
-$LC23:
+$LC25:
 	.ascii	"MIPS - Infraestructura b\303\241sica. v1.0.0\n\n\000"
 	.text
 	.align	2
@@ -746,11 +764,11 @@ printVersion:
 	sw	$28,24($sp)
 	move	$fp,$sp
 	la	$4,__sF+88
-	la	$5,$LC22
+	la	$5,$LC24
 	la	$25,fprintf
 	jal	$31,$25
 	la	$4,__sF+88
-	la	$5,$LC23
+	la	$5,$LC25
 	la	$25,fprintf
 	jal	$31,$25
 	move	$sp,$fp
@@ -845,7 +863,7 @@ $L64:
 	jal	$31,$25
 	sw	$2,40($fp)
 	lw	$4,36($fp)
-	la	$25,get_amount_of_matrix_elements
+	la	$25,get_matrix_elements
 	jal	$31,$25
 	sw	$2,44($fp)
 	lw	$2,52($fp)
