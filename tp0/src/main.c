@@ -37,11 +37,15 @@ int get_amount_element(int dimension);
 // Devuelve la cantidad de elementos de una matriz.
 int get_amount_of_matrix_elements(int dimension);
 
+void printHelp();
+void printVersion();
+int readFromStdInput(int argumentCount);
+
 int main (int argc, char *argv[])
 {
     char* line = malloc(sizeof(char));
     char c;
-    // int i;
+    char* param;
     int chars_per_line = 0;
     int matrix_dimension = 0;
     int amount_elements = 0;
@@ -54,58 +58,57 @@ int main (int argc, char *argv[])
     matrix_t* m2;
     matrix_t* product_matrix;
 
-    // Leo desde stdin
-    while( (c = getc(stdin)) != EOF)
-    {
-        chars_per_line++;
+    if (readFromStdInput(argc)) {
+        // Leo desde stdin
+        while( (c = getc(stdin)) != EOF)
+        {
+            chars_per_line++;
 
-        /*
-        Incremento la cantidad de memoria en funcion de la cantidad
-        de caracteres de la linea.
-        Luego, asigno el caracter a la linea
-        */
-        line = realloc(line, chars_per_line * sizeof(char));
-        line[chars_per_line - 1] = c;
+            /*
+            Incremento la cantidad de memoria en funcion de la cantidad
+            de caracteres de la linea.
+            Luego, asigno el caracter a la linea
+            */
+            line = realloc(line, chars_per_line * sizeof(char));
+            line[chars_per_line - 1] = c;
 
-        // Si finalizó la línea, multiplico las matrices
-        if ('\n' == c) {
-            element_pointer = read_arguments(line, chars_per_line,
-                                             &matrix_dimension);
+            // Si finalizó la línea, multiplico las matrices
+            if ('\n' == c) {
+                element_pointer = read_arguments(line, chars_per_line,
+                                                 &matrix_dimension);
 
-            // Calculo la cantidad de elementos de ambas matrices.
-            amount_elements = get_amount_element(matrix_dimension);
-            elements_per_matrix = get_amount_of_matrix_elements(matrix_dimension);
+                // Calculo la cantidad de elementos de ambas matrices.
+                amount_elements = get_amount_element(matrix_dimension);
+                elements_per_matrix = get_amount_of_matrix_elements(matrix_dimension);
 
-            // printf("amount_elements: %d\n", amount_elements);
-            // printf("matrix_dimension: %d\n", matrix_dimension);
+                // Seteo los arrays de elementos para ambas matrices
+                m1_elements = element_pointer;
+                m2_elements = &element_pointer[elements_per_matrix];
 
-            // Seteo los arrays de elementos para ambas matrices
-            m1_elements = element_pointer;
-            m2_elements = &element_pointer[elements_per_matrix];
+                m1 = create_matrix(matrix_dimension, matrix_dimension);
+                m1->array = m1_elements;
 
-            m1 = create_matrix(matrix_dimension, matrix_dimension);
-            m1->array = m1_elements;
+                m2 = create_matrix(matrix_dimension, matrix_dimension);
+                m2->array = m2_elements;
 
-            m2 = create_matrix(matrix_dimension, matrix_dimension);
-            m2->array = m2_elements;
-/*
-            for (i = 0; i < elements_per_matrix; i++) {
-                printf("m1->array[%d]: %f\n", i, m1->array[i]);
+                product_matrix = matrix_multiply(m1, m2);
+                print_result = print_matrix(stdout, product_matrix);
+
+                destroy_matrix(m1);
+                destroy_matrix(m2);
+                destroy_matrix(product_matrix);
+                free(element_pointer);
+
+                chars_per_line = 0;
             }
-            printf("\n");
-            for (i = 0; i < elements_per_matrix; i++) {
-                printf("m2->array[%d]: %f\n", i, m2->array[i]);
-            }
-*/
-            product_matrix = matrix_multiply(m1, m2);
-            print_result = print_matrix(stdout, product_matrix);
-
-            destroy_matrix(m1);
-            destroy_matrix(m2);
-            destroy_matrix(product_matrix);
-            free(element_pointer);
-            
-            chars_per_line = 0;
+        }
+    } else if (argc >= 2) { // Parseo los argumentos
+        param = *(argv + 1);
+        if ((strcmp(param, "-h") == 0) || (strcmp(param, "--help") == 0) ) {
+            printHelp();
+        }
+        else if ((strcmp(param, "-V") == 0) || (strcmp(param, "--version") == 0)) {
+            printVersion();
         }
     }
 
@@ -223,4 +226,28 @@ int get_amount_element(int dimension)
 int get_amount_of_matrix_elements(int dimension)
 {
     return dimension * dimension;
+}
+int readFromStdInput(int argumentCount) {
+    return (int)(argumentCount < 2);
+}
+
+void printHelp()
+{
+    fprintf(stdout, "$ tp0 -h\n");
+    fprintf(stdout, "Usage:\n");
+    fprintf(stdout, "  tp0 -h\n");
+    fprintf(stdout, "  tp0 -V\n");
+    fprintf(stdout, "  tp0 < in_file > out_file\n");
+    fprintf(stdout, "Options:\n");
+    fprintf(stdout, "  -V, --version    Print version and quit.\n");
+    fprintf(stdout, "  -h, --help       Print this information and quit.\n\n");
+    fprintf(stdout, "Examples:\n");
+    fprintf(stdout, "  tp0 < in.txt > out.txt\n");
+    fprintf(stdout, "  cat in.txt | tp0 > out.txt\n\n");
+}
+
+void printVersion()
+{
+    fprintf(stdout, "Copyright (c) 2016\n");
+    fprintf(stdout, "MIPS - Infraestructura básica. v1.0.0\n\n");
 }
