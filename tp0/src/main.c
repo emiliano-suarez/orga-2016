@@ -116,6 +116,7 @@ matrix_t* create_matrix(size_t rows, size_t cols)
 // Destructor de matrix_t
 void destroy_matrix(matrix_t* m)
 {
+    free(m->array);
     free(m);
 }
 
