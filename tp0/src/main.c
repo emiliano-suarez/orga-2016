@@ -32,6 +32,9 @@ double* read_arguments(char* line, int line_size, int *matrix_dimension);
 // Devuele la cantidad total de elementos de ambas matrices.
 int get_amount_element(int dimension);
 
+// Devuelve la cantidad de elementos de una matriz.
+int get_amount_of_matrix_elements(int dimension);
+
 int main (int argc, char *argv[])
 {
     char* line = malloc(sizeof(char));
@@ -40,11 +43,11 @@ int main (int argc, char *argv[])
     int chars_per_line = 0;
     int matrix_dimension = 0;
     int amount_elements = 0;
-    double matrix_elements = 0;
+    int elements_per_matrix = 0;
     double* matrix_elements_pointer;
-    double* element_pointer = 0;
-    double* pointer_m1 = 0;
-    double* pointer_m2 = 0;
+    double* element_pointer;
+    double* m1_elements = malloc(10 * sizeof(double));
+    double* m2_elements = malloc(10 * sizeof(double));
     matrix_t* m1;
     matrix_t* m2;
 
@@ -60,30 +63,79 @@ int main (int argc, char *argv[])
         */
         line = realloc(line, chars_per_line * sizeof(char));
         line[chars_per_line - 1] = c;
-
+/*
+        x = chars_per_line * sizeof(double);
+        element_pointer = realloc(element_pointer, x);
+*/
         // Si finalizó la línea, multiplico las matrices
         if ('\n' == c) {
             matrix_elements_pointer = read_arguments(line, chars_per_line,
                                               &matrix_dimension);
 
-            element_pointer = matrix_elements_pointer;
-
             // Calculo la cantidad de elementos de ambas matrices.
             amount_elements = get_amount_element(matrix_dimension);
+            element_pointer = matrix_elements_pointer;
 
-            printf("matrix_dimension: %d\n", matrix_dimension);
             printf("amount_elements: %d\n", amount_elements);
+            printf("matrix_dimension: %d\n", matrix_dimension);
+
+            elements_per_matrix = get_amount_of_matrix_elements(matrix_dimension);
+
+            // Seteo los arrays de elementos para ambas matrices
+            i = 0;
+            do {
+                if (i < elements_per_matrix) {
+                    // printf("m1_element[%d]: %f\n", i, *element_pointer);
+                    *m1_elements = *element_pointer;
+                    m1_elements++;
+                } else {
+                    // printf("m2_element[%d]: %f\n", i, *element_pointer);
+                    *m2_elements = *element_pointer;
+                    m2_elements++;
+                }
+
+                i++;
+                element_pointer++;
+            } while(i < amount_elements);
+
+            for (i = 0; i < elements_per_matrix; i++) {
+                printf("m1[%d]: %f\n", i, m1_elements[i]);
+            }
+printf("***********************************************\n");
+/*
+            printf("elements_per_matrix: %d\n",  elements_per_matrix);
+            do {
+printf("-> i[%d]: %f\n", i, *element_pointer);
+                if (i < elements_per_matrix) {
+                    m1_elements[i] = *element_pointer;
+printf("m1[%d]: %f (%f)\n", i, m1_elements[i], *element_pointer);
+                } else {
+                    m1_elements[i] = '\0';
+                    m2_elements[i - elements_per_matrix] = *element_pointer;
+printf("m2[%d]: %f (%f)\n", i - elements_per_matrix, m2_elements[i - elements_per_matrix], *element_pointer);
+                }
+                i++;
+                element_pointer++;
+            } while(i < amount_elements);
+
+            m2_elements[i] = '\0';
+
+printf("***********************************************\n");
+            for (i = 0; i < (amount_elements / 2); i++) {
+                printf("m1[%d]: %f\n", i, m1_elements[i]);
+            }
+*/
 
             // m1 = create_matrix(matrix_dimension, matrix_dimension);
             // m1->array = element_pointer;
-
+/*
             i = 0;
             do {
                 printf("element[%d]: %f\n", i, *element_pointer);
                 i++;
                 element_pointer++;
             } while(i < amount_elements);
-
+*/
             // printf("m1.col: %d\n", m1->cols);
             // printf("m1.rows: %d\n", m1->rows);
 
@@ -99,16 +151,12 @@ int main (int argc, char *argv[])
 // Constructor de matrix_t
 matrix_t* create_matrix(size_t rows, size_t cols)
 {
-    int matrix_size = rows + cols + sizeof(double);
-    double* matrix_array = malloc(matrix_size);
-
     matrix_t* new_matrix = malloc(sizeof(matrix_t));
     new_matrix->rows = rows;
     new_matrix->cols = cols;
-    new_matrix->array = matrix_array;
 
     return new_matrix;
-}   
+}
 
 // Destructor de matrix_t
 void destroy_matrix(matrix_t* m)
@@ -152,7 +200,7 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2)
 }
 
 double* read_arguments(char* line, int line_size, int *matrix_dimension) {
-    char *first_token;
+    char *first_token;  
     char *search = " ";
     double element = 0;
     double* matrix_elements;
@@ -171,7 +219,7 @@ double* read_arguments(char* line, int line_size, int *matrix_dimension) {
     while ( (first_token = strtok( NULL, search)) != NULL) {
         element = atof(first_token);
         *matrix_elements = element;
-        // printf( "x: %f\n", *matrix_elements);
+        printf( "x: %f\n", *matrix_elements);
         matrix_elements++;
     }
 
@@ -186,4 +234,9 @@ double* read_arguments(char* line, int line_size, int *matrix_dimension) {
 int get_amount_element(int dimension)
 {
     return dimension * dimension * 2;
+}
+
+int get_amount_of_matrix_elements(int dimension)
+{
+    return dimension * dimension;
 }
