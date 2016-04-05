@@ -128,7 +128,10 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2)
     matrix_t* result = create_matrix(m1->rows, m1->cols);
     double temp;
     int dim = m1->rows;
-    int i,j,k,x = 0;
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    int x = 0;
     int elements_per_matrix = 0;
 
     elements_per_matrix = get_amount_of_matrix_elements(m1->rows);
