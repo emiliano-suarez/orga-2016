@@ -41,18 +41,10 @@ int main (int argc, char *argv[])
 {
     char* line = malloc(sizeof(char));
     char c;
-	int i;
     int chars_per_line = 0;
     int matrix_dimension = 0;
-    int amount_elements = 0;
     int elements_per_matrix = 0;
     int print_result = 0;
-    double* element_pointer;
-    double* m1_elements;
-    double* m2_elements;
-    matrix_t* m1;
-    matrix_t* m2;
-    matrix_t* product_matrix;
 
     // Leo desde stdin
     while( (c = getc(stdin)) != EOF)
@@ -69,40 +61,29 @@ int main (int argc, char *argv[])
 
         // Si finalizó la línea, multiplico las matrices
         if ('\n' == c) {
-            element_pointer = read_arguments(line, chars_per_line,
+            double* element_pointer = read_arguments(line, chars_per_line,
                                              &matrix_dimension);
 
             // Calculo la cantidad de elementos de ambas matrices.
-            amount_elements = get_amount_element(matrix_dimension);
             elements_per_matrix = get_amount_of_matrix_elements(matrix_dimension);
 
-            printf("amount_elements: %d\n", amount_elements);
-            printf("matrix_dimension: %d\n", matrix_dimension);
-
             // Seteo los arrays de elementos para ambas matrices
-            m1_elements = element_pointer;
-            m2_elements = &element_pointer[elements_per_matrix];
+            double* m1_elements = element_pointer;
+            double* m2_elements = &element_pointer[elements_per_matrix];
 
-            m1 = create_matrix(matrix_dimension, matrix_dimension);
+            matrix_t* m1 = create_matrix(matrix_dimension, matrix_dimension);
             m1->array = m1_elements;
 
-            m2 = create_matrix(matrix_dimension, matrix_dimension);
+            matrix_t* m2 = create_matrix(matrix_dimension, matrix_dimension);
             m2->array = m2_elements;
 
-		for (i = 0; i < elements_per_matrix; i++) {
-			printf("m1->array[%d]: %f\n", i, m1->array[i]);
-		}
-		printf("\n");
-		for (i = 0; i < elements_per_matrix; i++) {
-			printf("m2->array[%d]: %f\n", i, m2->array[i]);
-		}
-
-            product_matrix = matrix_multiply(m1, m2);
+            matrix_t* product_matrix = matrix_multiply(m1, m2);
             print_result = print_matrix(stdout, product_matrix);
 
 	    free(element_pointer);
             destroy_matrix(m1);
             destroy_matrix(m2);
+	    free(product_matrix->array);
             destroy_matrix(product_matrix);
 
             chars_per_line = 0;
@@ -173,7 +154,6 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2)
 
             j -= (dim * dim);
             i -= dim;
-	    printf("temp: %f\n", temp);
             result->array[k] = temp;
         }
         x = 0;
