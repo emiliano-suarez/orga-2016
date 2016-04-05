@@ -87,19 +87,8 @@ int main (int argc, char *argv[])
             m2 = create_matrix(matrix_dimension, matrix_dimension);
             m2->array = m2_elements;
 
-            for (i = 0; i < elements_per_matrix; i++) {
-                printf("m1->array[%d]: %f\n", i, m1->array[i]);
-            }
-            printf("\n");
-            for (i = 0; i < elements_per_matrix; i++) {
-                printf("m2->array[%d]: %f\n", i, m2->array[i]);
-            }
-
-            //product_matrix = matrix_multiply(m1, m2);
+            product_matrix = matrix_multiply(m1, m2);
             //print_result = print_matrix(stdout, product_matrix);
-
-            // printf("m1.col: %d\n", m1->cols);
-            // printf("m1.rows: %d\n", m1->rows);
 
             chars_per_line = 0;
         }
@@ -113,13 +102,6 @@ int main (int argc, char *argv[])
 // Constructor de matrix_t
 matrix_t* create_matrix(size_t rows, size_t cols)
 {
-/*
-    double* elements = malloc(sizeof(double*));
-    matrix_t* new_matrix = malloc(sizeof(matrix_t));
-    new_matrix->rows = rows;
-    new_matrix->cols = cols;
-    new_matrix->array = elements;
-*/
     matrix_t* new_matrix = malloc(sizeof(matrix_t));
     new_matrix->rows = rows;
     new_matrix->cols = cols;
@@ -144,22 +126,37 @@ int print_matrix(FILE* fp, matrix_t* m)
 matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2)
 {
     matrix_t* result = create_matrix(m1->rows, m1->cols);
+    double temp;
     int dim = m1->rows;
     int i,j,k,x = 0;
+    int elements_per_matrix = 0;
+
+    elements_per_matrix = get_amount_of_matrix_elements(m1->rows);
+
+    for (i = 0; i < elements_per_matrix; i++) {
+        printf("m1->array[%d]: %f\n", i, m1->array[i]);
+    }
+    printf("\n");
+    for (i = 0; i < elements_per_matrix; i++) {
+        printf("m2->array[%d]: %f\n", i, m2->array[i]);
+    }
 
     for(; k < (dim * dim) ; i += dim){
-
+        printf("1. (%d,%d)\n", i, j);
         for(; x < dim; j++, k++, x++){
-
-            int temp = 0;
+            printf("2. (%d,%d)\n", i, j);
+            temp = 0;
 
             for (;j < (dim * dim); i++, j += dim){
+                printf("3. (%d,%d)\n", i, j);
                 temp = temp + m1->array[i] * m2->array[j];
             }
 
             j -= (dim * dim);
             i -= dim;
-            result->array[k] = temp;
+            printf("k = %d\n", k);
+            printf("temp = %f\n", temp);
+            // result->array[k] = temp;
         }
         x = 0;
         j = 0;
