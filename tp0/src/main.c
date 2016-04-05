@@ -3,6 +3,7 @@
 #include <string.h>
 
 #define DECIMALS 2
+#define ERROR_OPEN_FILE 10
 
 typedef struct matrix {
     size_t rows;
@@ -62,18 +63,31 @@ int main (int argc, char *argv[])
         param = *(argv + 1);
         if ((strcmp(param, "-h") == 0) || (strcmp(param, "--help") == 0) ) {
             printHelp();
+            return 0;
         }
         else if ((strcmp(param, "-V") == 0) || (strcmp(param, "--version") == 0)) {
             printVersion();
+            return 0;
         }
         else if (argc == 2) {
             // Tengo archivo de output unicamente.
-
+            if (NULL == (output = fopen(argv[1],"r"))) {
+                fprintf(stderr, "Output File '%s' doesn't exist.\n", argv[1]);
+                exit(ERROR_OPEN_FILE);
+            }
         }
         else {
             // Tengo archivo de input y output
-
+            if (NULL == (input = fopen(argv[1],"r"))) {
+                fprintf(stderr, "Input File '%s' doesn't exist.\n", argv[1]);
+                exit(ERROR_OPEN_FILE);
+            }
+            if (NULL == (output = fopen(argv[2],"r"))) {
+                fprintf(stderr, "Output File '%s' doesn't exist.\n", argv[2]);
+                exit(ERROR_OPEN_FILE);
+            }
         }
+        result = matrices_multiply(input, output);
     }
 
     return result;
