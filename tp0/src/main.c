@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define DECIMALS 2
+
 typedef struct matrix {
     size_t rows;
     size_t cols;
@@ -89,6 +91,10 @@ int main (int argc, char *argv[])
             product_matrix = matrix_multiply(m1, m2);
             print_result = print_matrix(stdout, product_matrix);
 
+            destroy_matrix(m1);
+            destroy_matrix(m2);
+            destroy_matrix(product_matrix);
+
             chars_per_line = 0;
         }
        
@@ -111,6 +117,7 @@ matrix_t* create_matrix(size_t rows, size_t cols)
 // Destructor de matrix_t
 void destroy_matrix(matrix_t* m)
 {
+    free(m);
 }
 
 /*
@@ -119,13 +126,19 @@ por el enunciado
 */
 int print_matrix(FILE* fp, matrix_t* m)
 {
+    // FIXME: imprimir por fp.
+
+    // char* text = "";
     int i = 0;
-    int j = 0;
     int dim = m->rows;
 
-    for (i = 0; i < dim; i++) {
-        fputs("x\n", fp);
+    for (i = 0; i < dim * dim; i++) {
+        // fputs(gcvt(m->array[i], DECIMALS, text), fp);
+        // fputs(". ", fp);
+        printf("%f ", m->array[i]);
     }
+    // fputs("\n", fp);
+    printf("\n");
 
     return 0;
 }
