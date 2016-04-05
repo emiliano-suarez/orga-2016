@@ -39,7 +39,6 @@ int main (int argc, char *argv[])
 {
     char* line = malloc(sizeof(char));
     char c;
-    int i = 0;
     int chars_per_line = 0;
     int matrix_dimension = 0;
     int amount_elements = 0;
@@ -88,7 +87,7 @@ int main (int argc, char *argv[])
             m2->array = m2_elements;
 
             product_matrix = matrix_multiply(m1, m2);
-            //print_result = print_matrix(stdout, product_matrix);
+            print_result = print_matrix(stdout, product_matrix);
 
             chars_per_line = 0;
         }
@@ -120,6 +119,14 @@ por el enunciado
 */
 int print_matrix(FILE* fp, matrix_t* m)
 {
+    int i = 0;
+    int j = 0;
+    int dim = m->rows;
+
+    for (i = 0; i < dim; i++) {
+        fputs("x\n", fp);
+    }
+
     return 0;
 }
 
@@ -133,8 +140,8 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2)
     int j = 0;
     int k = 0;
     int x = 0;
+/*
     int elements_per_matrix = 0;
-
     elements_per_matrix = get_amount_of_matrix_elements(m1->rows);
 
     for (i = 0; i < elements_per_matrix; i++) {
@@ -144,23 +151,23 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2)
     for (i = 0; i < elements_per_matrix; i++) {
         printf("m2->array[%d]: %f\n", i, m2->array[i]);
     }
-
+*/
     for(; k < (dim * dim) ; i += dim){
-        printf("1. (%d,%d)\n", i, j);
+        // printf("1. (%d,%d)\n", i, j);
         for(; x < dim; j++, k++, x++){
-            printf("2. (%d,%d)\n", i, j);
+            // printf("2. (%d,%d)\n", i, j);
             temp = 0;
 
             for (;j < (dim * dim); i++, j += dim){
-                printf("3. (%d,%d)\n", i, j);
+                // printf("3. (%d,%d)\n", i, j);
                 temp = temp + m1->array[i] * m2->array[j];
             }
 
             j -= (dim * dim);
             i -= dim;
-            printf("k = %d\n", k);
-            printf("temp = %f\n", temp);
-            // result->array[k] = temp;
+            // printf("k = %d\n", k);
+            // printf("temp = %f\n", temp);
+            result->array[k] = temp;
         }
         x = 0;
         j = 0;
