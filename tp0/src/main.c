@@ -44,18 +44,13 @@ int main (int argc, char *argv[])
     int matrix_dimension = 0;
     int amount_elements = 0;
     int elements_per_matrix = 0;
+    int print_result = 0;
     double* element_pointer;
     double* m1_elements = malloc(sizeof(double));
     double* m2_elements = malloc(sizeof(double));
     matrix_t* m1 = malloc(sizeof(matrix_t));
     matrix_t* m2 = malloc(sizeof(matrix_t));
-
-/*
-    printf("hola\n");
-    m1 = create_matrix(2, 2);
-    printf("chau\n");
-    return 0;
-*/
+    matrix_t* product_matrix = malloc(sizeof(matrix_t));
 
     // Leo desde stdin
     while( (c = getc(stdin)) != EOF)
@@ -96,10 +91,12 @@ int main (int argc, char *argv[])
                 printf("m1->array[%d]: %f\n", i, m1->array[i]);
             }
             printf("\n");
-
             for (i = 0; i < elements_per_matrix; i++) {
                 printf("m2->array[%d]: %f\n", i, m2->array[i]);
             }
+
+            //product_matrix = matrix_multiply(m1, m2);
+            //print_result = print_matrix(stdout, product_matrix);
 
             // printf("m1.col: %d\n", m1->cols);
             // printf("m1.rows: %d\n", m1->rows);
@@ -110,7 +107,7 @@ int main (int argc, char *argv[])
     }
 
     free(line);
-    return 0;
+    return print_result;
 }
 
 // Constructor de matrix_t
@@ -124,6 +121,9 @@ matrix_t* create_matrix(size_t rows, size_t cols)
     new_matrix->array = elements;
 */
     matrix_t* new_matrix = malloc(sizeof(matrix_t));
+    new_matrix->rows = rows;
+    new_matrix->cols = cols;
+
     return new_matrix;
 }
 
