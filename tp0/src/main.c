@@ -1,8 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
+#include <ctype.h>
 
-#define ERROR_OPEN_FILE 10
+#define ERROR_READING_ARGUMENTS 10
+#define ERROR_INVALID_MATRIX_VALUE 20
+#define DECIMAL_SEP '.'
+#define ENTER '\n'
 
 typedef struct matrix {
     size_t rows;
@@ -34,11 +39,12 @@ int get_amount_element(int dimension);
 // Devuelve la cantidad de elementos de una matriz.
 int get_matrix_elements(int dimension);
 
+int matrices_multiply(FILE* input, FILE* output);
+
 void printHelp();
 void printVersion();
 int readFromStdInput(int argumentCount);
-
-int matrices_multiply(FILE* input, FILE* output);
+int isNumber(char* value);
 
 int main (int argc, char *argv[])
 {
@@ -69,7 +75,7 @@ int main (int argc, char *argv[])
         }
         else {
             fprintf(stderr, "Error reading arguments\n");
-            exit(ERROR_OPEN_FILE);
+            exit(ERROR_READING_ARGUMENTS);
         }
         result = matrices_multiply(input, output);
     }
@@ -150,13 +156,28 @@ double* read_arguments(char* line, int line_size,
      // Leo la dimension de la matriz, que esta en la primer posicion
      // de la linea.
     first_token = strtok(line, search);
+
+    if ( ! isNumber(first_token)) {
+        fprintf(stdout, "'%s' is not a valid value.\n", first_token);
+        exit(ERROR_INVALID_MATRIX_VALUE);
+    }
+
     *matrix_dimension = atoi(first_token);
-    number_of_elements = (get_amount_element(*matrix_dimension));
+    number_of_elements = get_amount_element(*matrix_dimension);
+
     matrix_elements = malloc(number_of_elements * sizeof(double));
     pointer_to_first_element = matrix_elements;
 
     while ( (first_token = strtok( NULL, search)) != NULL) {
-        element = atof(first_token);
+
+        if ( ! isNumber(first_token)) {
+            fprintf(stdout, "'%s' is not a valid value.\n", first_token);
+            exit(ERROR_INVALID_MATRIX_VALUE);
+        }
+        else {
+            element = atof(first_token);
+        }
+
         *matrix_elements = element;
         matrix_elements++;
     }
@@ -169,6 +190,25 @@ double* read_arguments(char* line, int line_size,
     return matrix_elements;
 }
 
+int isNumber(char* value) {
+    int is_number = 1;
+    int i = 0;
+    
+    while (value[i] != '\0') {
+        if (isdigit((int)value[i])
+            || value[i] == DECIMAL_SEP
+            || value[i] == ENTER
+            || (int)value[i] == 10
+            || (int)value[i] == -1) {
+        }
+        else{
+            return 0;
+        }
+        i++;
+    }
+    return is_number;
+}
+
 int get_amount_element(int dimension)
 {
     return dimension * dimension * 2;
@@ -178,6 +218,7 @@ int get_matrix_elements(int dimension)
 {
     return dimension * dimension;
 }
+
 int readFromStdInput(int argumentCount) {
     return (int)(argumentCount < 2);
 }
@@ -265,4 +306,3 @@ int matrices_multiply(FILE* input, FILE* output)
 
     return print_result;
 }
-
