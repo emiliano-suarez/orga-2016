@@ -6,6 +6,7 @@
 
 #define ERROR_READING_ARGUMENTS 10
 #define ERROR_INVALID_MATRIX_VALUE 20
+#define ERROR_INVALID_NUMBER_OF_ELEMENTS 30
 #define DECIMAL_SEP '.'
 #define ENTER '\n'
 
@@ -31,7 +32,8 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2);
 // Lee una linea por stdin y devuelve los elementos de la matriz y la
 // dimension por referencia.
 double* read_arguments(char* line, int line_size,
-                       int *matrix_dimension);
+                       int *matrix_dimension,
+                       int *elements_scanned);
 
 // Devuele la cantidad total de elementos de ambas matrices.
 int get_amount_element(int dimension);
@@ -145,7 +147,7 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2)
 }
 
 double* read_arguments(char* line, int line_size,
-                       int *matrix_dimension) {
+                       int *matrix_dimension, int *elements_scanned) {
     char *first_token;  
     char *search = " ";
     double element = 0;
@@ -158,7 +160,7 @@ double* read_arguments(char* line, int line_size,
     first_token = strtok(line, search);
 
     if ( ! isNumber(first_token)) {
-        fprintf(stdout, "'%s' is not a valid value.\n", first_token);
+        fprintf(stderr, "'%s' is not a valid value.\n", first_token);
         exit(ERROR_INVALID_MATRIX_VALUE);
     }
 
@@ -171,10 +173,11 @@ double* read_arguments(char* line, int line_size,
     while ( (first_token = strtok( NULL, search)) != NULL) {
 
         if ( ! isNumber(first_token)) {
-            fprintf(stdout, "'%s' is not a valid value.\n", first_token);
+            fprintf(stderr, "'%s' is not a valid value.\n", first_token);
             exit(ERROR_INVALID_MATRIX_VALUE);
         }
         else {
+            (*elements_scanned)++;
             element = atof(first_token);
         }
 
@@ -251,6 +254,7 @@ int matrices_multiply(FILE* input, FILE* output)
     char* line = malloc(sizeof(char));
     int chars_per_line = 0;
     int matrix_dimension = 0;
+    int elements_scanned = 0;
     int amount_elements = 0;
     int elements_per_matrix = 0;
     int print_result = 0;
@@ -274,10 +278,20 @@ int matrices_multiply(FILE* input, FILE* output)
         // Si finalizo la linea, multiplico las matrices
         if ('\n' == c) {
             element_pointer = read_arguments(line, chars_per_line,
-                                             &matrix_dimension);
+                                             &matrix_dimension,
+                                             &elements_scanned);
 
             // Calculo la cantidad de elementos de ambas matrices.
             amount_elements = get_amount_element(matrix_dimension);
+
+            // Si la cantidad de elementos ingresadas, es menor la
+            // cantidad de elementos de ambas matrices, devuelvo
+            // un error.
+            if (elements_scanned < amount_elements) {
+                fprintf(stderr, "Invalid number of elements.\n");
+                exit(ERROR_INVALID_NUMBER_OF_ELEMENTS);
+            }
+
             elements_per_matrix = get_matrix_elements(matrix_dimension);
 
             // Seteo los arrays de elementos para ambas matrices
