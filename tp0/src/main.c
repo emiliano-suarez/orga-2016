@@ -55,7 +55,7 @@ int main (int argc, char *argv[])
         // Leo desde stdin
         result = matrices_multiply(input, output);
 
-    } else if (argc >= 2) { // Parseo los argumentos
+    } else if (argc == 2) { // Parseo los argumentos
         param = *(argv + 1);
         if ((strcmp(param, "-h") == 0)
             || (strcmp(param, "--help") == 0) ) {
@@ -67,26 +67,9 @@ int main (int argc, char *argv[])
             printVersion();
             return 0;
         }
-        else if (argc == 2) {
-            // Tengo archivo de output unicamente.
-            if (NULL == (output = fopen(argv[1], "w+"))) {
-                fprintf(stderr,
-                        "Output File '%s' doesn't exist.\n", argv[1]);
-                exit(ERROR_OPEN_FILE);
-            }
-        }
         else {
-            // Tengo archivo de input y output
-            if (NULL == (input = fopen(argv[1], "r"))) {
-                fprintf(stderr,
-                        "Input File '%s' doesn't exist.\n", argv[1]);
-                exit(ERROR_OPEN_FILE);
-            }
-            if (NULL == (output = fopen(argv[2], "w+"))) {
-                fprintf(stderr,
-                        "Output File '%s' doesn't exist.\n", argv[2]);
-                exit(ERROR_OPEN_FILE);
-            }
+            fprintf(stderr, "Error reading arguments\n");
+            exit(ERROR_OPEN_FILE);
         }
         result = matrices_multiply(input, output);
     }
@@ -119,7 +102,7 @@ int print_matrix(FILE* fp, matrix_t* m)
 
     fprintf(fp, "%d", dim);
     for (i = 0; i < dim * dim; i++) {
-        fprintf(fp, " %f", m->array[i]);
+        fprintf(fp, " %g", m->array[i]);
     }
     fprintf(fp, "\n");
     return 0;
