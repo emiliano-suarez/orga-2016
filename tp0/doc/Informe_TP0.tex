@@ -75,7 +75,7 @@ Se implementó  un programa en lenguaje \textbf{C}, que multiplica matrices cuadr
 
 En este Trabajo Práctico se pretende familiarizarse con las herramientas de software que usaremos en los siguientes trabajos.
 
-Además, se utilizará \textsl{GXemul} para simular una máquina \textsl{MIPS} corriendo una versión reciente del sistema operativo \textsl{NetBSD}.
+Se utilizará \textsl{GXemul} para simular una máquina \textsl{MIPS} corriendo una versión reciente del sistema operativo \textsl{NetBSD}.
 
 El programa implementado, muestra por \textsl{stdout} u \textsl{output file}, el resultado de multiplicar dos matrices cuadras (puede ser mas de una operación), previamente leídas por \textsl{stdin} o \textsl{input file}.
 
@@ -118,47 +118,55 @@ El \textsl{Makefile} puede observarse a continuación:\\
 
 \section{Casos de Prueba}
 Algunos de los casos de pruebas realizados, pueden observarse a continuación:
-\textbf{Importante}: Los resultados fueron modificados a 2 decimales por prolijidad del informe. En la corrida real, los mismos se verán con 6 decimales.
 
+En el siguiente caso de prueba, se puede observar el contenido del archivo de entrada \textsl{varias.txt} y la salida guardada en el archivo \textsl{out.txt} (previamente vacio), utilizando los operadores \textsl{<} y \textsl{>}, respectivamente:
 \begin{verbatim}
-root@:~/2016/tp0# cat varias.txt 
+root@:~/2016/tp0# cat varias.txt
 3 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18
 3 1 1 1 2 2 2 3 3 3 4 4 4 5 5 5 6 6 6
 2 1 2 3 4 5 6 7 8
-root@:~/2016/tp0# cat output.txt 
-root@:~/2016/tp0# ./tp0 varias.txt output.txt 
-root@:~/2016/tp0# cat output.txt 
-3 84.00 90.00 96.00 201.00 216.00 231.00 318.00 342.00 366.00 
-3 15.00 15.00 15.00 30.00 30.00 30.00 45.00 45.00 45.00 
-2 19.00 22.00 43.00 50.00 
+2 1 1 1 1 1 1 1 1
+root@:~/2016/tp0# cat out.txt 
+root@:~/2016/tp0# ./tp0 < varias.txt > out.txt
+root@:~/2016/tp0# cat out.txt 
+3 84 90 96 201 216 231 318 342 366
+3 15 15 15 30 30 30 45 45 45
+2 19 22 43 50
+2 2 2 2 2
 \end{verbatim}
 
+En esta prueba, el programa recibe por \textsl{stdin} la salida del comando \textsl{cat example.txt}, a través del pipe (\textsl{|}). La salida, es almacenada en \textsl{out.txt}:
 \begin{verbatim}
 root@:~/2016/tp0# cat example.txt 
 2 1 2 3 4 1 2 3 4
 3 1 2 3 4 5 6.1 3 2 1 1 0 0 0 1 0 0 0 1
-root@:~/2016/tp0# cat example.txt | ./tp0
-2 7.00 10.00 15.00 22.00 
-3 1.00 2.00 3.00 4.00 5.00 6.100 3.00 2.00 1.00
+root@:~/2016/tp0# cat out.txt 
+root@:~/2016/tp0# cat example.txt | ./tp0 > out.txt
+root@:~/2016/tp0# cat out.txt 
+2 7 10 15 22
+3 1 2 3 4 5 6.1 3 2 1
 \end{verbatim}
 
+El siguiente ejemplo, muestra el mensaje de error producido por el ingreso de una opción incorrecta:
 \begin{verbatim}
-root@:~/2016/tp0# ./tp0 
-2 1 2 3 4 1 2 3 4
-2 7.00 10.00 15.00 22.00 
-3 1 2 3 4 5 6.1 3 2 1 1 0 0 0 1 0 0 0 1
-3 1.00 2.00 3.00 4.00 5.00 6.10000 3.00 2.00 1.00
+root@:~/2016/tp0# ./tp0 -x
+Error reading arguments
 \end{verbatim}
 
+El programa valida que los elementos de las matrices sean números. El siguiente ejemplo, muestra una matriz de 2x2 contiendo el caracter \textsl{d} y el mensaje mostrado por \textsl{stdrr}:
 \begin{verbatim}
-root@:~/2016/tp0# cat output.txt 
-root@:~/2016/tp0# cat example.txt 
-2 1 2 3 4 1 2 3 4
-3 1 2 3 4 5 6.1 3 2 1 1 0 0 0 1 0 0 0 1
-root@:~/2016/tp0# cat example.txt | ./tp0 output.txt 
-root@:~/2016/tp0# cat output.txt 
-2 7.00 10.00 15.00 22.00
-3 1.00 2.00 3.00 4.00 5.00 6.100 3.00 2.00 1.00
+root@:~/2016/tp0# cat error_nan.txt 
+2 1 3 45 3.4 d 4 5 1
+root@:~/2016/tp0# cat error_nan.txt | ./tp0 > out.txt 
+'d' is not a valid value.
+\end{verbatim}
+
+Otra de las validaciones consideradas, es la cantidad de elementos necesario para la multiplicación. El siguiente ejemplo, pretende multiplicar una matriz de 3x3, pero para la segunda matriz solo ingresamos 1 elemento, el cero (faltan 8 mas):
+\begin{verbatim}
+root@:~/2016/tp0# cat error_elems.txt 
+3 1 2 3 4 5 6 7 8 9 0
+root@:~/2016/tp0# cat error_elems.txt | ./tp0 > out.txt 
+Invalid number of elements.
 \end{verbatim}
 
 \section{Conclusiones}
