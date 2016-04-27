@@ -198,13 +198,13 @@ int isNumber(char* value) {
     int i = 0;
     
     while (value[i] != '\0') {
-        if (isdigit((int)value[i])
+        if ( ! (isdigit((int)value[i])
             || value[i] == DECIMAL_SEP
             || value[i] == ENTER
             || (int)value[i] == 10
-            || (int)value[i] == -1) {
-        }
-        else{
+            || (int)value[i] == -1
+            || ((value[i] == '-') && (i == 0))
+            ) ) {
             return 0;
         }
         i++;
