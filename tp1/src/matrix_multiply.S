@@ -45,10 +45,9 @@ matrix_multiply:
 	addu t0, 0($zero)
 	sw t0, 16($fp)	# temp: t0, sp+16
 
-	/*
-	addu t1, 0($zero)
-	sw t1, 20($fp)	#guardar dim = m1->rows ??
-	*/
+	lw    v0,56($fp)    # Obtengo el comienzo del struct y lo guardo en V0
+	lw    v0,0(v0)      # Obtengo el 'rows' (posicion 0) del struct
+	sw    v0,20($fp)    # dim = m1->rows;
 
 	addu t2, 0($zero)
 	sw t2, 24($fp)	# i: t2, sp+24
@@ -62,7 +61,7 @@ matrix_multiply:
 	addu t5, 0($zero)
 	sw t5, 36($fp)	# x: t5, sp+36
 
-	mult t1, t1	# (dim * dim)
+	mult v0, v0	# (dim * dim)
 	mflo t6		# t6 = (dim * dim)
 
 	#primer loop
@@ -71,7 +70,7 @@ L1:
 	
 	#segundo loop
 L2:	
-	bge t5, t1, DONE2	# branch to DONE2 if  $t5 >= $t1 (x >= dim)
+	bge t5, v0, DONE2	# branch to DONE2 if  $t5 >= $t1 (x >= dim)
 	
 	#tercer loop
 L3:
@@ -83,13 +82,13 @@ L3:
 	add t0, t0, t7		# temp = temp + m1->array[i] * m2->array[j]
 	
 	addi t2, t2, 1		# i++
-	add t3, t3, t1		# j += dim
+	add t3, t3, v0		# j += dim
 	b L3			# vuelvo al loop 3
 
 	#termina loop 3
 DONE3:
 	subu t3, t3, t6		# j -= (dim * dim)
-	subu t2, t2, t1		# i -= dim
+	subu t2, t2, v0		# i -= dim
 	/*
 	result->array[k] = temp;	# temp = t0
 	*/
@@ -102,7 +101,7 @@ DONE3:
 DONE2:
 	addu t5, 0($zero)	# x = 0
 	addu t3, 0($zero)	# j = 0
-	addu t2, t2, t1		# i += dim
+	addu t2, t2, v0		# i += dim
 	b L1			# vuelvo al loop 1
 
 	#termina loop 1
