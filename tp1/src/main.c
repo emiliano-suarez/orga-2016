@@ -101,21 +101,6 @@ void destroy_matrix(matrix_t* m)
     free(m);
 }
 
-// Imprime matrix_t sobre el file pointer fp en el formato solicitado
-// por el enunciado
-int print_matrix(FILE* fp, matrix_t* m)
-{
-    int i = 0;
-    int dim = m->rows;
-
-    fprintf(fp, "%d", dim);
-    for (i = 0; i < dim * dim; i++) {
-        fprintf(fp, " %g", m->array[i]);
-    }
-    fprintf(fp, "\n");
-    return 0;
-}
-
 double* read_arguments(char* line, int line_size,
                        int *matrix_dimension, int *elements_scanned) {
     char *first_token;  
@@ -289,4 +274,34 @@ int matrices_multiply(FILE* input, FILE* output)
     free(line);
 
     return print_result;
+}
+
+matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2)
+{
+    matrix_t* result = create_matrix(m1->rows, m1->cols);
+    result->array = malloc(m1->rows * m1->cols * sizeof(double));
+    double temp;
+    int dim = m1->rows;
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    int x = 0;
+
+    for(; k < (dim * dim) ; i += dim){
+        for(; x < dim; j++, k++, x++){
+            temp = 0;
+
+            for (;j < (dim * dim); i++, j += dim){
+                temp = temp + m1->array[i] * m2->array[j];
+            }
+
+            j -= (dim * dim);
+            i -= dim;
+            result->array[k] = temp;
+        }
+        x = 0;
+        j = 0;
+    }
+
+    return result;
 }

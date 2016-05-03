@@ -4,7 +4,7 @@ LDFLAGS=
 OBJ_DIR=/
 SOURCES=main.c
 SOURCES_ANSI=ansi/main.c
-MIPS_FILES=matrix_multiply.S print_matrix.S
+MIPS_FILES=print_matrix.S
 
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=tp1
