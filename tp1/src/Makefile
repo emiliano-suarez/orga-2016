@@ -4,10 +4,10 @@ LDFLAGS=
 OBJ_DIR=/
 SOURCES=main.c
 SOURCES_ANSI=ansi/main.c
-MIPS_FILES=matrix_multiply.S
+MIPS_FILES=matrix_multiply.S print_matrix.S
 
 OBJECTS=$(SOURCES:.c=.o)
-EXECUTABLE=sha
+EXECUTABLE=tp1
 
 mips:
 	$(CC) $(CFLAGS) $(SOURCES) $(MIPS_FILES) -o $(EXECUTABLE)
