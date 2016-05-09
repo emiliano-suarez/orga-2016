@@ -275,33 +275,3 @@ int matrices_multiply(FILE* input, FILE* output)
 
     return print_result;
 }
-
-matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2)
-{
-    matrix_t* result = create_matrix(m1->rows, m1->cols);
-    result->array = malloc(m1->rows * m1->cols * sizeof(double));
-    double temp;
-    int dim = m1->rows;
-    int i = 0;
-    int j = 0;
-    int k = 0;
-    int x = 0;
-
-    for(; k < (dim * dim) ; i += dim){
-        for(; x < dim; j++, k++, x++){
-            temp = 0;
-
-            for (;j < (dim * dim); i++, j += dim){
-                temp = temp + m1->array[i] * m2->array[j];
-            }
-
-            j -= (dim * dim);
-            i -= dim;
-            result->array[k] = temp;
-        }
-        x = 0;
-        j = 0;
-    }
-
-    return result;
-}
