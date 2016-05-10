@@ -150,20 +150,23 @@ double* read_arguments(char* line, int line_size,
 
 int isNumber(char* value) {
     int is_number = 1;
+    int len = 0;
     int i = 0;
-    
-    while (value[i] != '\0') {
-        if ( ! (isdigit((int)value[i])
-            || value[i] == DECIMAL_SEP
-            || value[i] == ENTER
-            || (int)value[i] == 10
-            || (int)value[i] == -1
-            || ((value[i] == '-') && (i == 0))
-            ) ) {
-            return 0;
-        }
-        i++;
+    char* ptr;
+    double ret;
+
+    ret = strtod(value, &ptr);
+    i = strcmp(value, ptr);
+
+    while (ptr[len] != '\0') {
+        len++;
     }
+
+    // Si ret = 0 y los string son iguales, entonces no pudo convertir
+    if (0 == ret && 0 == i && len > 0 && ENTER != ptr[0]) {
+        is_number = 0;
+    }
+
     return is_number;
 }
 
