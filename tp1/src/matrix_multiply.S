@@ -63,8 +63,7 @@ matrix_multiply:
 	syscall
 
 	lw t1, 44($fp)	# result: t1, sp+44
-	lw t1, 8(t1)	# Obtengo el 'array' (posicion 8) del struct
-	sw v0, 0(t1)	# Guardo la direccion que el syscall me devolvio en v0 (comienzo del array)
+	sw v0, 8(t1)	# Guardo la direccion que el syscall me devolvio en v0 (comienzo del array)
 	
 	#sigo declarando variables
 
