@@ -104,18 +104,17 @@ L3:
 	bge t3, t6, DONE3	# branch to DONE3 if  $t3 >= $t6 (j >= (dim*dim))
 	
 	lw    a0,64($fp)    	# Cargo el comienzo de m1 en a0
-	l.d    $f2,8(a0)      	# Cargo en comienzo de m1.array
+	lw    a0,8(a0)      	# Cargo en comienzo de m1.array
 	sll   v0,t2,3      	# Me muevo de a 8 bytes, pues double* array
-	mtc1 v0, $f4
- 	cvt.d.w $f4, $f4	# Convierto i a double
-	add.d $f2,$f2,$f4	# Me posiciono en la posicion 'i' del array
+	addu a0,a0,v0		# Me posiciono en la posicion 'i' del array
+	l.d $f2, 0(a0)		# Cargo el double de la posicion 'i'
+	
 
 	lw    a1,68($fp)    	# Cargo el comienzo de m2 en a1
-	l.d    $f6,8(a1)      	# Cargo en comienzo de m2.array
+	lw    a1,8(a1)      	# Cargo en comienzo de m2.array
 	sll   v0,t3,3      	# Me muevo de a 8 bytes, pues double* array
-	mtc1 v0, $f8
- 	cvt.d.w $f8, $f8	# Convierto j a double
-	add.d $f6,$f6,$f8	# Me posiciono en la posicion 'j' del array
+	addu a1,a1,v0		# Me posiciono en la posicion 'j' del array
+	l.d $f6,0(a1)		# Cargo el double de la posicion 'j'
 	
 	mul.d $f10,$f2,$f6	# m1->array[i] * m2->array[j]
 	
