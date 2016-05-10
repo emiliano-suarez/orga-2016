@@ -208,8 +208,14 @@ int isNumber(char* value) {
     }
 
     // Si ret = 0 y los string son iguales, entonces no pudo convertir
-    if ((0 == ret && 0 == i)
-        || (len > 0 && ENTER != ptr[0])) {
+    if (0 == ret && 0 == i && len > 0 && ENTER != ptr[0]) {
+        printf("ret: %lf\n", ret);
+        printf("string iguales? %d\n", i);
+        printf("len: %d\n", len);
+        if (len) {
+            printf("char: %d\n", ptr[0]);
+        }
+        printf("string part is |%s|\n", ptr);
         is_number = 0;
     }
 
