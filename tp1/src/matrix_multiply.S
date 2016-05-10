@@ -59,16 +59,16 @@ matrix_multiply:
 	mult t3,t4	# m1->rows * m1->cols * sizeof(double)
 	mflo t5
 	move a0, t5	# a0: espacio que pido en el malloc
-	li v0, 9	# syscall 9 (sbrk)
-	syscall
+	la t9, malloc
+	jal ra, t9
 
 	lw t1, 44($fp)	# result: t1, sp+44
 	sw v0, 8(t1)	# Guardo la direccion que el syscall me devolvio en v0 (comienzo del array)
 	
 	#sigo declarando variables
 
-	li t0, 0
-	sw t0, 16($fp)	# temp: t0, sp+16
+	li.d $f0, 0
+	s.d $f0, 16($fp)	# temp: f0, sp+16
 
 	lw    t1,64($fp)    # Obtengo el comienzo del struct y lo guardo en t1
 	lw    t1,0(t1)      # Obtengo el 'rows' (posicion 0) del struct
@@ -97,25 +97,29 @@ L1:
 	#segundo loop
 L2:	
 	bge t5, t1, DONE2	# branch to DONE2 if  $t5 >= $t1 (x >= dim)
-	
+	li.d $f0, 0		# temp = 0
+
 	#tercer loop
 L3:
 	bge t3, t6, DONE3	# branch to DONE3 if  $t3 >= $t6 (j >= (dim*dim))
 	
 	lw    a0,64($fp)    	# Cargo el comienzo de m1 en a0
-	lw    a0,8(a0)      	# Cargo en comienzo de m1.array
+	l.d    $f2,8(a0)      	# Cargo en comienzo de m1.array
 	sll   v0,t2,3      	# Me muevo de a 8 bytes, pues double* array
-	addu a0,a0,v0		# Me posiciono en la posicion 'i' del array
+	mtc1 v0, $f4
+ 	cvt.d.w $f4, $f4	# Convierto i a double
+	add.d $f2,$f2,$f4	# Me posiciono en la posicion 'i' del array
 
 	lw    a1,68($fp)    	# Cargo el comienzo de m2 en a1
-	lw    a1,8(a1)      	# Cargo en comienzo de m2.array
+	l.d    $f6,8(a1)      	# Cargo en comienzo de m2.array
 	sll   v0,t3,3      	# Me muevo de a 8 bytes, pues double* array
-	addu a1,a1,v0		# Me posiciono en la posicion 'j' del array
+	mtc1 v0, $f8
+ 	cvt.d.w $f8, $f8	# Convierto j a double
+	add.d $f6,$f6,$f8	# Me posiciono en la posicion 'j' del array
 	
-	mult a0,a1		# m1->array[i] * m2->array[j]
-	mflo t7
+	mul.d $f10,$f2,$f6	# m1->array[i] * m2->array[j]
 	
-	add t0, t0, t7		# temp = temp + m1->array[i] * m2->array[j]
+	add.d $f0, $f0, $f10	# temp = temp + m1->array[i] * m2->array[j]
 	
 	addi t2, t2, 1		# i++
 	add t3, t3, t1		# j += dim
@@ -131,7 +135,7 @@ DONE3:
 	sll v1,t4,3      	# Me muevo de a 8 bytes, pues double* array
 	addu v0,v0,v1		# Me posiciono en la posicion 'k' del array
 
-	sw t0, 0(v0)		# result->array[k] = temp;
+	s.d $f0, 0(v0)		# result->array[k] = temp;
 
 	addi t3, t3, 1		# j++
 	addi t4, t4, 1		# k++
